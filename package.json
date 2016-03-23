@@ -1,0 +1,18 @@
+{
+  "name": "poloniex_ticker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autobahn": "^0.9.9",
+    "elasticsearch": "^10.1.3",
+    "lodash": "^4.6.1",
+    "moment": "^2.12.0"
+  }
+}
