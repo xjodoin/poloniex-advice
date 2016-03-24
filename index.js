@@ -67,12 +67,19 @@ setInterval(function() {
 
     var advice;
 
+    var lastVariation = 0;
+    var variation;
+
     _.each(buckets, function(agg) {
 
       if (agg.short_moving_avg) {
+
+        variation = (agg.short_moving_avg.value - agg.long_moving_avg.value) / agg.long_moving_avg.value;
+
         //long
         if (agg.short_moving_avg.value > agg.long_moving_avg.value) {
-          if (lastDirection === 'long') {
+
+          if (lastDirection === 'long' && variation > lastVariation) {
             count++;
           } else {
             if (lastDirection === 'short' && count > 3) {
@@ -81,8 +88,10 @@ setInterval(function() {
             lastDirection = 'long';
             count = 1;
           }
+
         } else if (agg.short_moving_avg.value < agg.long_moving_avg.value) {
-          if (lastDirection === 'short') {
+
+          if (lastDirection === 'short' && variation < lastVariation) {
             count++;
           } else {
             if (lastDirection === 'long' && count > 3) {
@@ -92,25 +101,24 @@ setInterval(function() {
             count = 1;
           }
         }
+
+        lastVariation = variation;
       }
-
-
     });
 
     console.log('Direction : ' + lastDirection + ' Count ' + count + ' Advice ' + advice);
     if (count > 3 && advice !== lastAdvice) {
       lastAdvice = advice;
-      console.log(moment().format()+' - Do it now!! -> ' + advice);
+      console.log(moment().format() + ' - Do it now!! -> ' + advice);
       client.create({
-        index: 'poloniex_btc_eth-'+moment().format('YYYY.MM.DD'),
+        index: 'poloniex_btc_eth-' + moment().format('YYYY.MM.DD'),
         type: 'advice',
         body: {
           '@timestamp': new Date(),
-           tags: ['advice'],
-           title: advice
+          tags: ['advice'],
+          title: advice
         }
-      }, function(error, response) {
-      });
+      }, function(error, response) {});
 
     }
 
