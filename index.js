@@ -81,7 +81,7 @@ setInterval(function() {
 
           if (lastDirection === 'long' && variation > lastVariation) {
             count++;
-          } else {
+          } else if (lastDirection !== 'long') {
             if (lastDirection === 'short' && count > 3) {
               advice = 'buy';
             }
@@ -93,7 +93,7 @@ setInterval(function() {
 
           if (lastDirection === 'short' && variation < lastVariation) {
             count++;
-          } else {
+          } else if (lastDirection !== 'short') {
             if (lastDirection === 'long' && count > 3) {
               advice = 'sell';
             }
