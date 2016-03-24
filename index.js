@@ -7,6 +7,11 @@ var client = new elasticsearch.Client({
   log: 'info'
 });
 
+var paper = {
+  eth: 100,
+  btc: 0
+};
+
 var lastAdvice;
 
 setInterval(function() {
@@ -68,6 +73,8 @@ setInterval(function() {
     var lastVariation = 0;
     var variation;
 
+    var lastAvgPrice;
+
     _.each(buckets, function(agg) {
 
       if (agg.short_moving_avg) {
@@ -96,31 +103,50 @@ setInterval(function() {
 
         lastVariation = variation;
       }
+
+      if (agg.avg_sell_price) {
+        lastAvgPrice = agg.avg_sell_price.value;
+      }
+
     });
 
 
     console.log('Direction : ' + lastDirection + ' Count ' + count);
     if (count > 3 && lastDirection !== lastAdvice) {
-      lastAdvice = lastDirection;
 
-      var mapping = {
-        'short': 'sell',
-        'long': 'buy'
-      };
+      if (lastAdvice) {
 
-      var advice = mapping[lastDirection];
+        var mapping = {
+          'short': 'sell',
+          'long': 'buy'
+        };
 
-      console.log(moment().format() + ' - Do it now!! -> ' + advice);
+        var advice = mapping[lastDirection];
 
-      client.create({
-        index: 'poloniex_btc_eth-' + moment().format('YYYY.MM.DD'),
-        type: 'advice',
-        body: {
-          '@timestamp': new Date(),
-          tags: ['advice'],
-          title: advice
+        console.log(moment().format() + ' - Do it now!! -> ' + advice);
+
+        client.create({
+          index: 'poloniex_btc_eth-' + moment().format('YYYY.MM.DD'),
+          type: 'advice',
+          body: {
+            '@timestamp': new Date(),
+            tags: ['advice'],
+            title: advice
+          }
+        }, function(error, response) {});
+
+        //simulate trading
+        if (advice === 'buy' && paper.btc > 0) {
+          paper.eth = paper.btc / lastAvgPrice;
+        } else if (advice === 'sell' && paper.eth > 0) {
+          paper.btc = paper.eth * lastAvgPrice;
         }
-      }, function(error, response) {});
+
+        console.log("Simulate account BTC : " + paper.btc + " ETH : " + paper.eth);
+        
+      }
+
+      lastAdvice = lastDirection;
 
     }
 
