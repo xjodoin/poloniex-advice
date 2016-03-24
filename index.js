@@ -101,6 +101,17 @@ setInterval(function() {
     if (count > 3 && advice !== lastAdvice) {
       lastAdvice = advice;
       console.log(moment().format()+' - Do it now!! -> ' + advice);
+      client.create({
+        index: 'poloniex_btc_eth-'+moment().format('YYYY.MM.DD'),
+        type: 'advice',
+        body: {
+          '@timestamp': new Date(),
+           tags: ['advice'],
+           title: advice
+        }
+      }, function(error, response) {
+      });
+
     }
 
   });
