@@ -65,8 +65,6 @@ setInterval(function() {
     var lastDirection;
     var count;
 
-    var advice;
-
     var lastVariation = 0;
     var variation;
 
@@ -82,9 +80,6 @@ setInterval(function() {
           if (lastDirection === 'long' && variation > lastVariation) {
             count++;
           } else if (lastDirection !== 'long') {
-            if (lastDirection === 'short' && count > 3) {
-              advice = 'buy';
-            }
             lastDirection = 'long';
             count = 1;
           }
@@ -94,9 +89,6 @@ setInterval(function() {
           if (lastDirection === 'short' && variation < lastVariation) {
             count++;
           } else if (lastDirection !== 'short') {
-            if (lastDirection === 'long' && count > 3) {
-              advice = 'sell';
-            }
             lastDirection = 'short';
             count = 1;
           }
@@ -106,10 +98,20 @@ setInterval(function() {
       }
     });
 
-    console.log('Direction : ' + lastDirection + ' Count ' + count + ' Advice ' + advice);
-    if (count > 3 && advice !== lastAdvice) {
-      lastAdvice = advice;
+
+    console.log('Direction : ' + lastDirection + ' Count ' + count);
+    if (count > 3 && lastDirection !== lastAdvice) {
+      lastAdvice = lastDirection;
+
+      var mapping = {
+        'short': 'sell',
+        'long': 'buy'
+      };
+
+      var advice = mapping[lastDirection];
+
       console.log(moment().format() + ' - Do it now!! -> ' + advice);
+
       client.create({
         index: 'poloniex_btc_eth-' + moment().format('YYYY.MM.DD'),
         type: 'advice',
