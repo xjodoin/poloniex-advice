@@ -138,12 +138,14 @@ setInterval(function() {
         //simulate trading
         if (advice === 'buy' && paper.btc > 0) {
           paper.eth = paper.btc / lastAvgPrice;
+          paper.btc = 0;
         } else if (advice === 'sell' && paper.eth > 0) {
           paper.btc = paper.eth * lastAvgPrice;
+          paper.eth = 0;
         }
 
         console.log("Simulate account BTC : " + paper.btc + " ETH : " + paper.eth);
-        
+
       }
 
       lastAdvice = lastDirection;
