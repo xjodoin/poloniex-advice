@@ -3,7 +3,7 @@ var elasticsearch = require('elasticsearch');
 var moment = require('moment');
 
 var client = new elasticsearch.Client({
-  host: 'https://kopf.jodoin.me/es',
+  host: 'elasticsearch.weave.local:9200',
   log: 'info'
 });
 
@@ -100,7 +100,7 @@ setInterval(function() {
     console.log('Direction : ' + lastDirection + ' Count ' + count + ' Advice ' + advice);
     if (count > 3 && advice !== lastAdvice) {
       lastAdvice = advice;
-      console.log('Do it now!! -> ' + advice);
+      console.log(moment().format()+' - Do it now!! -> ' + advice);
     }
 
   });
