@@ -86,7 +86,7 @@ setInterval(function() {
         //long
         if (agg.short_moving_avg.value > agg.long_moving_avg.value) {
 
-          if (lastDirection === 'long' && variation > lastVariation && (agg.short_moving_avg.value - firstDirectionPrice) / firstDirectionPrice > 0.01) {
+          if (lastDirection === 'long' && variation > lastVariation && (agg.short_moving_avg.value - firstDirectionPrice) / firstDirectionPrice > 0.001) {
             count++;
           } else if (lastDirection !== 'long') {
             lastDirection = 'long';
@@ -94,7 +94,7 @@ setInterval(function() {
             firstDirectionPrice = agg.short_moving_avg.value;
           }
 
-        } else if (agg.short_moving_avg.value < agg.long_moving_avg.value && (firstDirectionPrice - agg.short_moving_avg.value) / firstDirectionPrice > 0.01) {
+        } else if (agg.short_moving_avg.value < agg.long_moving_avg.value && (firstDirectionPrice - agg.short_moving_avg.value) / firstDirectionPrice > 0.001) {
 
           if (lastDirection === 'short' && variation < lastVariation) {
             count++;
