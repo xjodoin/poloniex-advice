@@ -73,6 +73,8 @@ setInterval(function() {
     var lastVariation = 0;
     var variation;
 
+    var firstDirectionPrice;
+
     var lastAvgPrice;
 
     _.each(buckets, function(agg) {
@@ -84,20 +86,22 @@ setInterval(function() {
         //long
         if (agg.short_moving_avg.value > agg.long_moving_avg.value) {
 
-          if (lastDirection === 'long' && variation > lastVariation) {
+          if (lastDirection === 'long' && variation > lastVariation && (agg.short_moving_avg.value - firstDirectionPrice) / firstDirectionPrice > 0.01) {
             count++;
           } else if (lastDirection !== 'long') {
             lastDirection = 'long';
             count = 1;
+            firstDirectionPrice = agg.short_moving_avg.value;
           }
 
-        } else if (agg.short_moving_avg.value < agg.long_moving_avg.value) {
+        } else if (agg.short_moving_avg.value < agg.long_moving_avg.value && (firstDirectionPrice - agg.short_moving_avg.value) / firstDirectionPrice > 0.01) {
 
           if (lastDirection === 'short' && variation < lastVariation) {
             count++;
           } else if (lastDirection !== 'short') {
             lastDirection = 'short';
             count = 1;
+            firstDirectionPrice = agg.short_moving_avg.value;
           }
         }
 
