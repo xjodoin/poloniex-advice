@@ -137,10 +137,16 @@ setInterval(function() {
 
         //simulate trading
         if (advice === 'buy' && paper.btc > 0) {
-          paper.eth = paper.btc / lastAvgPrice;
+          var ethTotal = paper.btc / lastAvgPrice;
+          var ethFee = ethTotal * 0.0025;
+          console.log("ETH transaction fee : " + ethFee);
+          paper.eth = ethTotal - ethFee;
           paper.btc = 0;
         } else if (advice === 'sell' && paper.eth > 0) {
-          paper.btc = paper.eth * lastAvgPrice;
+          var btcTotal = paper.eth * lastAvgPrice;
+          var btcFee = btcTotal * 0.0025;
+          console.log("BTC transaction fee : " + btcFee);
+          paper.btc = btcTotal - btcFee;
           paper.eth = 0;
         }
 
