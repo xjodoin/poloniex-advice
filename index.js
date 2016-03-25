@@ -32,7 +32,7 @@ setInterval(function() {
         "sell": {
           "date_histogram": {
             "field": "@timestamp",
-            "interval": "30s"
+            "interval": "10s"
           },
           "aggs": {
             "avg_sell_price": {
