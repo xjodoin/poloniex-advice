@@ -94,9 +94,9 @@ setInterval(function() {
             firstDirectionPrice = agg.short_moving_avg.value;
           }
 
-        } else if (agg.short_moving_avg.value < agg.long_moving_avg.value && (firstDirectionPrice - agg.short_moving_avg.value) / firstDirectionPrice > 0.001) {
+        } else if (agg.short_moving_avg.value < agg.long_moving_avg.value) {
 
-          if (lastDirection === 'short' && variation < lastVariation) {
+          if (lastDirection === 'short' && variation < lastVariation && (firstDirectionPrice - agg.short_moving_avg.value) / firstDirectionPrice > 0.001) {
             count++;
           } else if (lastDirection !== 'short') {
             lastDirection = 'short';
