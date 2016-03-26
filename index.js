@@ -116,7 +116,8 @@ setInterval(function() {
 
 
     console.log('Direction : ' + lastDirection + ' Count ' + count);
-    if (count > 3 && lastDirection !== lastAdvice) {
+
+    if (((count > 3 && lastDirection === 'long') || (count > 1 && lastDirection === 'short')) && lastDirection !== lastAdvice) {
 
       if (lastAdvice) {
 
