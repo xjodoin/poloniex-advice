@@ -13,6 +13,7 @@ var paper = {
 };
 
 var lastAdvice;
+var lastBuyPrice;
 
 setInterval(function() {
   client.search({
@@ -120,6 +121,21 @@ setInterval(function() {
     if (((count > 3 && lastDirection === 'long') || (count > 1 && lastDirection === 'short')) && lastDirection !== lastAdvice) {
 
       if (lastAdvice) {
+
+        if (lastBuyPrice) {
+          var profit;
+          if (lastDirection === 'long') {
+            profit = (lastBuyPrice - lastAvgPrice) / lastAvgPrice;
+          } else if (lastDirection === 'short') {
+            profit = (lastAvgPrice - lastBuyPrice) / lastBuyPrice;
+          }
+
+          console.log('Profit : ' + profit * 100 + ' %');
+          if (profit < 0.0025) {
+            console.log('Not enought profit to cover fee!!');
+            return;
+          }
+        }
 
         var mapping = {
           'short': 'sell',
