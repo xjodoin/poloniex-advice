@@ -1,19 +1,15 @@
 var _ = require('lodash');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
+var adviceEventEmiter = require('./adviceEventEmiter');
+var trader = require('trader')();
 
 var client = new elasticsearch.Client({
   host: 'elasticsearch.weave.local:9200',
   log: 'info'
 });
 
-var paper = {
-  eth: 100,
-  btc: 0
-};
-
 var lastAdvice;
-var lastBuyPrice;
 
 setInterval(function() {
   client.search({
@@ -116,26 +112,11 @@ setInterval(function() {
     });
 
 
-    console.log('Direction : ' + lastDirection + ' Count ' + count);
+    // console.log('Direction : ' + lastDirection + ' Count ' + count);
 
     if (((count > 3 && lastDirection === 'long') || (count > 1 && lastDirection === 'short')) && lastDirection !== lastAdvice) {
 
       if (lastAdvice) {
-
-        if (lastBuyPrice) {
-          var profit;
-          if (lastDirection === 'long') {
-            profit = (lastBuyPrice - lastAvgPrice) / lastAvgPrice;
-          } else if (lastDirection === 'short') {
-            profit = (lastAvgPrice - lastBuyPrice) / lastBuyPrice;
-          }
-
-          console.log('Profit : ' + profit * 100 + ' %');
-          if (profit < 0.0025) {
-            console.log('Not enought profit to cover fee!!');
-            return;
-          }
-        }
 
         var mapping = {
           'short': 'sell',
@@ -144,7 +125,12 @@ setInterval(function() {
 
         var advice = mapping[lastDirection];
 
-        console.log(moment().format() + ' - Do it now!! -> ' + advice);
+        // console.log(moment().format() + ' - Do it now!! -> ' + advice);
+
+        adviceEventEmiter.emit('advice', {
+          type: advice,
+          lastAvgPrice: lastAvgPrice
+        });
 
         client.create({
           index: 'poloniex_btc_eth-' + moment().format('YYYY.MM.DD'),
@@ -155,25 +141,6 @@ setInterval(function() {
             title: advice
           }
         }, function(error, response) {});
-
-        //simulate trading
-        if (advice === 'buy' && paper.btc > 0) {
-          var ethTotal = paper.btc / lastAvgPrice;
-          var ethFee = ethTotal * 0.0025;
-          console.log("ETH transaction fee : " + ethFee);
-          paper.eth = ethTotal - ethFee;
-          paper.btc = 0;
-          lastBuyPrice = lastAvgPrice;
-        } else if (advice === 'sell' && paper.eth > 0) {
-          var btcTotal = paper.eth * lastAvgPrice;
-          var btcFee = btcTotal * 0.0025;
-          console.log("BTC transaction fee : " + btcFee);
-          paper.btc = btcTotal - btcFee;
-          paper.eth = 0;
-          lastBuyPrice = lastAvgPrice;
-        }
-
-        console.log("Simulate account BTC : " + paper.btc + " ETH : " + paper.eth);
 
       }
 
