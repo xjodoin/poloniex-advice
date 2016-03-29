@@ -9,8 +9,9 @@ var wallet = {
 
 
 var startTrading = function () {
+  console.log('Start trading wallet : '+JSON.stringify(wallet));
 
-  myEmitter.on('advice', function (advice) {
+  adviceEventEmiter.on('advice', function (advice) {
     console.log(advice);
   });
 

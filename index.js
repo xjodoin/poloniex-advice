@@ -2,10 +2,10 @@ var _ = require('lodash');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
 var adviceEventEmiter = require('./adviceEventEmiter');
-var trader = require('trader')();
+var trader = require('./trader')();
 
 var client = new elasticsearch.Client({
-  host: 'elasticsearch.weave.local:9200',
+  host: 'https://kopf.jodoin.me/es',
   log: 'info'
 });
 
