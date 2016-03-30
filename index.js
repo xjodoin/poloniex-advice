@@ -1,11 +1,12 @@
 var _ = require('lodash');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
+var config = require('./config/prod.json');
 var adviceEventEmiter = require('./adviceEventEmiter');
 var trader = require('./trader')();
 
 var client = new elasticsearch.Client({
-  host: 'https://kopf.jodoin.me/es',
+  host: config.elasticsearch,
   log: 'info'
 });
 
