@@ -14,6 +14,7 @@
     "elasticsearch": "^10.1.3",
     "lodash": "^4.6.1",
     "moment": "^2.12.0",
-    "plnx": "0.0.7"
+    "plnx": "0.0.7",
+    "winston": "^2.2.0"
   }
 }

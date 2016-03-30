@@ -1,9 +1,16 @@
 var _ = require('lodash');
+var winston = require('winston');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
 var config = require('./config/prod.json');
 var adviceEventEmiter = require('./adviceEventEmiter');
-var trader = require('./trader')();
+
+var plugins = config.plugins;
+
+_.each(plugins, function(plugin) {
+  winston.info('Load plugin ' + plugin);
+  require('./plugins/' + plugin).init();
+});
 
 var client = new elasticsearch.Client({
   host: config.elasticsearch,
