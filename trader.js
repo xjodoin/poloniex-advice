@@ -28,26 +28,28 @@ var startTrading = function() {
     }
 
     //TODO should cancel existing sell order
-    lastBuyPrice = lastAvgPrice;
+
 
     plnx.returnAvailableAccountBalances(config, function(err, data) {
       var wallet = data.exchange;
       console.log('Current trading wallet : ' + JSON.stringify(wallet));
 
-      var transactionConfig = _.clone(config);
+      var transactionConfig = {key: config.key,
+        secret: config.secret
+      };
       transactionConfig.currencyPair = 'BTC_ETH';
       transactionConfig.rate = lastAvgPrice;
-      transactionConfig.fillOrKill = false;
-      transactionConfig.immediateOrCancel = false;
 
       // buy: { currencyPair, rate, amount, fillOrKill?, immediateOrCancel? }
       if (advice.type === 'buy' && wallet.BTC > 0) {
+        lastBuyPrice = lastAvgPrice;
         transactionConfig.amount = wallet.BTC;
         console.log('Buy order : ' + JSON.stringify(transactionConfig));
         plnx.buy(transactionConfig, function(err, data) {
           console.log(err, data);
         });
       } else if (advice.type === 'sell' && wallet.ETH > 0) {
+        lastBuyPrice = lastAvgPrice;
         transactionConfig.amount = wallet.ETH;
         console.log('Sell order : ' + JSON.stringify(transactionConfig));
         plnx.sell(transactionConfig, function(err, data) {
