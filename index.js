@@ -1,9 +1,12 @@
 var _ = require('lodash');
-var winston = require('winston');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
 var config = require('./config/prod.json');
 var adviceEventEmiter = require('./adviceEventEmiter');
+
+var winston = require('winston');
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {'timestamp':true});
 
 var plugins = config.plugins;
 
@@ -27,7 +30,7 @@ setInterval(function() {
       "query": {
         "range": {
           "@timestamp": {
-            "gte": "now-60m",
+            "gte": "now-30m",
             "lte": "now"
           }
         }

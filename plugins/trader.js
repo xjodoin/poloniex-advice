@@ -6,6 +6,7 @@ var adviceEventEmiter = require('../adviceEventEmiter');
 
 var fee = 0.0025;
 var lastBuyPrice = config.lastBuyPrice;
+var lastPosition = config.lastPosition;
 
 var startTrading = function() {
 
@@ -23,7 +24,7 @@ var startTrading = function() {
 
       winston.info('Profit : ' + profit * 100 + ' %');
       if (profit < fee) {
-        winston.info('Not enought profit to cover fee ' + fee + ' !!');
+        winston.info('Not enought profit to cover fee ' + fee * 100 + '% !!');
         return;
       }
     }
@@ -52,17 +53,19 @@ var startTrading = function() {
       transactionConfig.rate = lastAvgPrice;
 
       // buy: { currencyPair, rate, amount, fillOrKill?, immediateOrCancel? }
-      if (advice.type === 'buy' && wallet.BTC > 0) {
+      if (advice.type === 'buy' && wallet.BTC > 0 && lastPosition === 'sell') {
         lastBuyPrice = lastAvgPrice;
         transactionConfig.amount = wallet.BTC / lastAvgPrice;
         winston.info('Buy order : ' + JSON.stringify(transactionConfig));
+        lastPosition = 'buy';
         plnx.buy(transactionConfig, function(err, data) {
           winston.info(err, data);
         });
-      } else if (advice.type === 'sell' && wallet.ETH > 0) {
+      } else if (advice.type === 'sell' && wallet.ETH > 0 && lastPosition === 'buy') {
         lastBuyPrice = lastAvgPrice;
         transactionConfig.amount = wallet.ETH;
         winston.info('Sell order : ' + JSON.stringify(transactionConfig));
+        lastPosition = 'sell';
         plnx.sell(transactionConfig, function(err, data) {
           winston.info(err, data);
         });
