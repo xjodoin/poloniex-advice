@@ -53,7 +53,7 @@ var startTrading = function() {
       transactionConfig.rate = lastAvgPrice;
 
       // buy: { currencyPair, rate, amount, fillOrKill?, immediateOrCancel? }
-      if (advice.type === 'buy' && wallet.BTC > 0 && lastPosition === 'sell') {
+      if (advice.type === 'buy' && wallet.BTC > 0.0001 && lastPosition === 'sell') {
         lastBuyPrice = lastAvgPrice;
         transactionConfig.amount = wallet.BTC / lastAvgPrice;
         winston.info('Buy order : ' + JSON.stringify(transactionConfig));
@@ -61,7 +61,7 @@ var startTrading = function() {
         plnx.buy(transactionConfig, function(err, data) {
           winston.info(err, data);
         });
-      } else if (advice.type === 'sell' && wallet.ETH > 0 && lastPosition === 'buy') {
+      } else if (advice.type === 'sell' && wallet.ETH > 0.0001 && lastPosition === 'buy') {
         lastBuyPrice = lastAvgPrice;
         transactionConfig.amount = wallet.ETH;
         winston.info('Sell order : ' + JSON.stringify(transactionConfig));
