@@ -31,7 +31,16 @@ var startTrading = function() {
     //TODO should cancel existing sell order
 
 
-    plnx.returnAvailableAccountBalances(config, function(err, data) {
+    plnx.returnAvailableAccountBalances({
+      key: config.key,
+      secret: config.secret
+    }, function(err, data) {
+
+      if(err) {
+        winston.error(err);
+        return;
+      }
+
       var wallet = data.exchange;
       winston.info('Current trading wallet : ' + JSON.stringify(wallet));
 
