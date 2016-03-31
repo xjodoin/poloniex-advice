@@ -69,8 +69,13 @@ module.exports = {
   init: function() {
     // private without options
     plnx.returnAvailableAccountBalances(config, function(err, data) {
-      winston.info('Start trading wallet : ' + JSON.stringify(data));
-      startTrading();
+      if(err) {
+          winston.error(err);
+      }
+      else {
+        winston.info('Start trading wallet : ' + JSON.stringify(data));
+        startTrading();
+      }
     });
 
   }
