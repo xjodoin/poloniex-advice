@@ -54,7 +54,7 @@ var startTrading = function() {
       // buy: { currencyPair, rate, amount, fillOrKill?, immediateOrCancel? }
       if (advice.type === 'buy' && wallet.BTC > 0) {
         lastBuyPrice = lastAvgPrice;
-        transactionConfig.amount = wallet.BTC;
+        transactionConfig.amount = wallet.BTC / lastAvgPrice;
         winston.info('Buy order : ' + JSON.stringify(transactionConfig));
         plnx.buy(transactionConfig, function(err, data) {
           winston.info(err, data);
@@ -77,7 +77,6 @@ var startTrading = function() {
 
 module.exports = {
   init: function() {
-    winston.info(config);
     // private without options
     plnx.returnAvailableAccountBalances({
       key: config.key,
