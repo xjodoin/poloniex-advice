@@ -35,7 +35,8 @@ var startTrading = function() {
       var wallet = data.exchange;
       winston.info('Current trading wallet : ' + JSON.stringify(wallet));
 
-      var transactionConfig = {key: config.key,
+      var transactionConfig = {
+        key: config.key,
         secret: config.secret
       };
       transactionConfig.currencyPair = 'BTC_ETH';
@@ -67,12 +68,15 @@ var startTrading = function() {
 
 module.exports = {
   init: function() {
+    winston.info(config);
     // private without options
-    plnx.returnAvailableAccountBalances(config, function(err, data) {
-      if(err) {
-          winston.error(err);
-      }
-      else {
+    plnx.returnAvailableAccountBalances({
+      key: config.key,
+      secret: config.secret
+    }, function(err, data) {
+      if (err) {
+        winston.error(err);
+      } else {
         winston.info('Start trading wallet : ' + JSON.stringify(data));
         startTrading();
       }
