@@ -10,7 +10,7 @@ function round(value) {
   return Math.round(value * 10000000) / 10000000;
 }
 
-var loadWallet = function(callback) {
+var loadWallet = function(walletCallback) {
 
   async.parallel([function(callback) {
     plnx.returnTradeHistory({
@@ -77,7 +77,7 @@ var loadWallet = function(callback) {
         ethBtcCost: ethBtcCost
       };
 
-      callback(err, wallet);
+      walletCallback(err, wallet);
     }
 
   });
