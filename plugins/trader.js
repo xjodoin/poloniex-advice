@@ -12,8 +12,17 @@ var startTrading = function() {
     winston.info('New advice ' + JSON.stringify(advice));
     var lastAvgPrice = advice.lastAvgPrice;
 
+    var transactionConfig = {
+      key: config.key,
+      secret: config.secret,
+      currencyPair: 'BTC_ETH',
+      rate: lastAvgPrice
+    };
+
     wallet.loadWallet(function(err, wallet) {
-      winston.info('Current wallet : ' + wallet);
+
+      winston.info('Current wallet : ' + JSON.stringify(wallet));
+
       if (advice.type === 'sell' && wallet.eth > 0.0001) {
         var totalBtc = (wallet.eth * lastAvgPrice) * (1 - fee);
         winston.info('Total btc without fee ' + totalBtc);
@@ -21,7 +30,15 @@ var startTrading = function() {
         winston.info('Profit ' + (profitBtc * 100) + '%');
 
         if (profitBtc > 0) {
-          winston.info('Sell now !!');
+          transactionConfig.amount = wallet.eth;
+          winston.info('Sell order : ' + JSON.stringify(transactionConfig));
+          // plnx.sell(transactionConfig, function(err, data) {
+          //   if (err) {
+          //     winston.error(err);
+          //   } else {
+          //     winston.info(data);
+          //   }
+          // });
         }
 
       } else if (advice.type === 'buy' && wallet.btc > 0.0001) {
@@ -31,7 +48,15 @@ var startTrading = function() {
         winston.info('Profit ' + (profitEth * 100) + '%');
 
         if (profitEth > 0) {
-          winston.info('Buy now !!');
+          transactionConfig.amount = wallet.btc / lastAvgPrice;
+          winston.info('Buy order : ' + JSON.stringify(transactionConfig));
+          // plnx.buy(transactionConfig, function(err, data) {
+          //   if (err) {
+          //     winston.error(err);
+          //   } else {
+          //     winston.info(data);
+          //   }
+          // });
         }
       }
     });

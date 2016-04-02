@@ -27,7 +27,7 @@ var loadWallet = function(walletCallback) {
   }], function(err, results) {
 
     if (err) {
-      callback(err);
+      walletCallback(err);
     } else {
       var trades = results[0];
       var balances = results[1].exchange;
