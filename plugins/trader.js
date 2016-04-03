@@ -21,6 +21,11 @@ var startTrading = function() {
 
     wallet.loadWallet(function(err, wallet) {
 
+      if(err) {
+        winston.error(err);
+        return;
+      }
+
       winston.info('Current wallet : ' + JSON.stringify(wallet));
 
       if (advice.type === 'sell' && wallet.eth > 0.0001) {
