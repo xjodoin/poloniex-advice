@@ -17,7 +17,7 @@ var loadWallet = function(walletCallback) {
       key: config.key,
       secret: config.secret,
       currencyPair: 'BTC_ETH',
-      start: moment().subtract(2, 'days').unix()
+      start: moment().subtract(7, 'days').unix()
     }, callback);
   }, function(callback) {
     plnx.returnAvailableAccountBalances({
