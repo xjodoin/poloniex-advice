@@ -12,7 +12,7 @@ function round(value) {
 
 var loadWallet = function(walletCallback) {
 
-  async.parallel([function(callback) {
+  async.series([function(callback) {
     plnx.returnTradeHistory({
       key: config.key,
       secret: config.secret,
