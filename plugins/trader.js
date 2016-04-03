@@ -4,7 +4,7 @@ var winston = require('winston');
 var config = require('../config/prod.json');
 var adviceEventEmiter = require('../adviceEventEmiter');
 
-var wallet = require('../wallet');
+var walletService = require('../wallet');
 var fee = 0.0025;
 
 var startTrading = function() {
@@ -19,7 +19,7 @@ var startTrading = function() {
       rate: lastAvgPrice
     };
 
-    wallet.loadWallet(function(err, wallet) {
+    walletService.loadWallet(function(err, wallet) {
 
       if(err) {
         winston.error(err);
