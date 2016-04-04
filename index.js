@@ -81,6 +81,8 @@ setInterval(function() {
     var lastVariation = 0;
     var variation;
 
+    var firstDirectionPrice;
+
     var lastAvgPrice;
 
     _.each(buckets, function(agg) {
@@ -92,20 +94,22 @@ setInterval(function() {
         //long
         if (agg.short_moving_avg.value > agg.long_moving_avg.value) {
 
-          if (lastDirection === 'long' && variation > lastVariation && agg.avg_sell_price.value > agg.short_moving_avg.value ) {
+          if (lastDirection === 'long' && variation > lastVariation && (agg.short_moving_avg.value - firstDirectionPrice) / firstDirectionPrice > 0.001) {
             count++;
           } else if (lastDirection !== 'long') {
             lastDirection = 'long';
             count = 1;
+            firstDirectionPrice = agg.short_moving_avg.value;
           }
 
         } else if (agg.short_moving_avg.value < agg.long_moving_avg.value) {
 
-          if (lastDirection === 'short' && variation < lastVariation && agg.avg_sell_price.value < agg.short_moving_avg.value) {
+          if (lastDirection === 'short' && variation < lastVariation && (firstDirectionPrice - agg.short_moving_avg.value) / firstDirectionPrice > 0.001) {
             count++;
           } else if (lastDirection !== 'short') {
             lastDirection = 'short';
             count = 1;
+            firstDirectionPrice = agg.short_moving_avg.value;
           }
         }
 
@@ -145,8 +149,7 @@ setInterval(function() {
           body: {
             '@timestamp': new Date(),
             tags: ['advice'],
-            title: advice,
-            desc: 'test'
+            title: advice
           }
         }, function(error, response) {});
 
