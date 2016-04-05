@@ -4,6 +4,7 @@ var moment = require('moment');
 var config = require('../config/prod.json');
 var adviceEventEmiter = require('../adviceEventEmiter');
 
+var currency = 'BTC_'+config.currency;
 
 var client = new elasticsearch.Client({
   host: config.elasticsearch,
@@ -17,7 +18,7 @@ var start = function () {
     client.search({
       index: 'poloniex-' + moment().format('YYYY.MM.DD'),
       type: 'sell',
-      q:'currency:BTC_ETH',
+      q:'currency:'+currency,
       body: {
         "query": {
           "range": {
