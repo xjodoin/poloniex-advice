@@ -31,14 +31,14 @@ var startTrading = function() {
 
       winston.info('Current wallet : ' + JSON.stringify(wallet));
 
-      if (advice.type === 'sell' && wallet.curencyValue > 0.0001) {
-        var totalBtc = (wallet.curencyValue * lastAvgPrice) * (1 - fee);
+      if (advice.type === 'sell' && wallet.currencyValue > 0.0001) {
+        var totalBtc = (wallet.currencyValue * lastAvgPrice) * (1 - fee);
         winston.info('Total btc without fee ' + totalBtc);
         var profitBtc = (totalBtc - wallet.currencyBtcCost) / wallet.currencyBtcCost;
         winston.info('Profit ' + (profitBtc * 100) + '%');
 
         if (profitBtc > 0) {
-          transactionConfig.amount = wallet.curencyValue;
+          transactionConfig.amount = wallet.currencyValue;
           winston.info('Sell order : ' + JSON.stringify(transactionConfig));
           plnx.sell(transactionConfig, function(err, data) {
             if (err) {
