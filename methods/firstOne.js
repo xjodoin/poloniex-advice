@@ -6,6 +6,8 @@ var adviceEventEmiter = require('../adviceEventEmiter');
 
 var currency = 'BTC_'+config.currency;
 
+var interval = config.interval;
+
 var client = new elasticsearch.Client({
   host: config.elasticsearch,
   log: 'info'
@@ -33,7 +35,7 @@ var start = function () {
           "sell": {
             "date_histogram": {
               "field": "@timestamp",
-              "interval": "20s"
+              "interval": interval
             },
             "aggs": {
               "avg_sell_price": {

@@ -1,12 +1,16 @@
 var _ = require('lodash');
 var winston = require('winston');
 var adviceEventEmiter = require('../adviceEventEmiter');
+var config = require('../config/prod.json');
+
+var currency = config.currency;
 
 
 var paper = {
-  eth: 100,
+  currency: 100,
   btc: 0
 };
+
 var fee = 0.0025;
 var lastBuyPrice;
 
@@ -33,22 +37,22 @@ var startTrading = function() {
 
     //simulate trading
      if (advice.type === 'buy' && paper.btc > 0) {
-       var ethTotal = paper.btc / lastAvgPrice;
-       var ethFee = ethTotal * 0.0025;
-       winston.info("PAPER -- ETH transaction fee : " + ethFee);
-       paper.eth = ethTotal - ethFee;
+       var currencyTotal = paper.btc / lastAvgPrice;
+       var currencyFee = currencyTotal * 0.0025;
+       winston.info('PAPER -- '+currency+' transaction fee : ' + ethFee);
+       paper.currency = currencyTotal - currencyFee;
        paper.btc = 0;
        lastBuyPrice = lastAvgPrice;
-     } else if (advice.type === 'sell' && paper.eth > 0) {
-       var btcTotal = paper.eth * lastAvgPrice;
+     } else if (advice.type === 'sell' && paper.currency > 0) {
+       var btcTotal = paper.currency * lastAvgPrice;
        var btcFee = btcTotal * 0.0025;
        winston.info("PAPER -- BTC transaction fee : " + btcFee);
        paper.btc = btcTotal - btcFee;
-       paper.eth = 0;
+       paper.currency = 0;
        lastBuyPrice = lastAvgPrice;
      }
 
-     winston.info("PAPER -- Simulate account BTC : " + paper.btc + " ETH : " + paper.eth);
+     winston.info("PAPER -- Simulate account BTC : " + paper.btc + " "+currency+" : " + paper.currency);
 
 
   });
