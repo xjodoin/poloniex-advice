@@ -18,7 +18,7 @@ var start = function() {
 
   adviceEventEmiter.on('advice', function(advice) {
     client.create({
-      index: 'poloniex_btc_eth-' + moment().format('YYYY.MM.DD'),
+      index: 'poloniex-' + moment().format('YYYY.MM.DD'),
       type: 'advice',
       body: {
         '@timestamp': new Date(),
