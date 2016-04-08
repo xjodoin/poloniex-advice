@@ -4,7 +4,7 @@ var moment = require('moment');
 var config = require('../config/prod.json');
 var adviceEventEmiter = require('../adviceEventEmiter');
 
-var currency = 'BTC_'+config.currency;
+var currency = 'BTC_' + config.currency;
 
 var interval = config.interval;
 
@@ -15,12 +15,12 @@ var client = new elasticsearch.Client({
 
 var lastAdvice;
 
-var start = function () {
+var start = function() {
   setInterval(function() {
     client.search({
       index: 'poloniex-' + moment().format('YYYY.MM.DD'),
       type: 'sell',
-      q:'currency:'+currency,
+      q: 'currency:' + currency,
       body: {
         "query": {
           "range": {
@@ -79,11 +79,12 @@ var start = function () {
       var firstDirectionPrice;
 
       var lastAvgPrice;
+      var lastShortMovingAvg;
 
       _.each(buckets, function(agg) {
 
         if (agg.short_moving_avg) {
-
+          lastShortMovingAvg = agg.short_moving_avg.value;
           variation = (agg.short_moving_avg.value - agg.long_moving_avg.value) / agg.long_moving_avg.value;
 
           //long
@@ -118,7 +119,12 @@ var start = function () {
       });
 
 
-      // console.log('Direction : ' + lastDirection + ' Count ' + count);
+      //protect again fast movement
+      if (lastDirection == 'long' && lastAvgPrice < lastShortMovingAvg) {
+        return;
+      } else if (lastDirection == 'short' && lastAvgPrice > lastShortMovingAvg) {
+        return;
+      }
 
       if (((count > 1 && lastDirection === 'long') || (count > 1 && lastDirection === 'short')) && lastDirection !== lastAdvice) {
 
@@ -130,8 +136,6 @@ var start = function () {
           };
 
           var advice = mapping[lastDirection];
-
-          // console.log(moment().format() + ' - Do it now!! -> ' + advice);
 
           adviceEventEmiter.emit('advice', {
             type: advice,
@@ -150,5 +154,5 @@ var start = function () {
 
 
 module.exports = {
-  start : start
+  start: start
 };
