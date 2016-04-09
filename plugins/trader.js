@@ -43,7 +43,7 @@ var startTrading = function() {
           if (err) {
             winston.error(err);
           } else {
-            winston.info(data);
+            winston.info(result);
           }
         });
       });
