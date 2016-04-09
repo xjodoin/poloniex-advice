@@ -26,6 +26,12 @@ var loadWallet = function(walletCallback) {
       key: config.key,
       secret: config.secret
     }, callback);
+  }, function(callback) {
+    plnx.returnOpenOrders({
+      key: config.key,
+      secret: config.secret,
+      currencyPair: currencyPair
+    }, callback);
   }], function(err, results) {
 
     if (err) {
@@ -76,7 +82,8 @@ var loadWallet = function(walletCallback) {
         btc: parseFloat(balances.BTC || 0),
         btcCurrencyCost: btcCurrencyCost,
         currencyValue: parseFloat(balances[currency] || 0),
-        currencyBtcCost: currencyBtcCost
+        currencyBtcCost: currencyBtcCost,
+        openOrders: results[2]
       };
 
       walletCallback(err, wallet);

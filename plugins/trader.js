@@ -5,7 +5,7 @@ var config = require('../config/prod.json');
 var adviceEventEmiter = require('../adviceEventEmiter');
 
 var currency = config.currency;
-var currencyPair = 'BTC_'+currency;
+var currencyPair = 'BTC_' + currency;
 
 var safePosition = config.safePosition;
 
@@ -26,12 +26,27 @@ var startTrading = function() {
 
     walletService.loadWallet(function(err, wallet) {
 
-      if(err) {
+      if (err) {
         winston.error(err);
         return;
       }
 
       winston.info('Current wallet : ' + JSON.stringify(wallet));
+
+      _.each(wallet.openOrders, function(order) {
+        winston.info('cancel order : ' + JSON.stringify(order));
+        plnx.cancelOrder({
+          key: config.key,
+          secret: config.secret,
+          orderNumber: order.orderNumber
+        }, function(err, result) {
+          if (err) {
+            winston.error(err);
+          } else {
+            winston.info(data);
+          }
+        });
+      });
 
       if (advice.type === 'sell' && wallet.currencyValue > 0.0001) {
         var totalBtc = (wallet.currencyValue * lastAvgPrice) * (1 - fee);
@@ -53,7 +68,7 @@ var startTrading = function() {
 
       } else if (advice.type === 'buy' && wallet.btc > 0.0001) {
         var totalCurrency = (wallet.btc / lastAvgPrice) * (1 - fee);
-        winston.info('Total '+currency+' without fee ' + totalCurrency);
+        winston.info('Total ' + currency + ' without fee ' + totalCurrency);
         var profitCurrency = (totalCurrency - wallet.btcCurrencyCost) / wallet.btcCurrencyCost;
         winston.info('Profit ' + (profitCurrency * 100) + '%');
 
