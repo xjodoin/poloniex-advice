@@ -44,7 +44,7 @@ var startTrading = function() {
     if (advice.type === 'buy' && paper.btc > 0) {
       var currencyTotal = paper.btc / lastAvgPrice;
       var currencyFee = currencyTotal * 0.0025;
-      winston.info('PAPER -- ' + currency + ' transaction fee : ' + ethFee);
+      winston.info('PAPER -- ' + currency + ' transaction fee : ' + currencyFee);
       paper.currency = currencyTotal - currencyFee;
       paper.btc = 0;
     } else if (advice.type === 'sell' && paper.currency > 0) {
