@@ -126,7 +126,7 @@ var start = function() {
         return;
       }
 
-      if (((count > 1 && lastDirection === 'long') || (count > 1 && lastDirection === 'short')) && lastDirection !== lastAdvice) {
+      if (lastDirection !== lastAdvice) {
 
         if (lastAdvice) {
 
