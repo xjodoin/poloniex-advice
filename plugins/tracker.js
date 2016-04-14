@@ -4,7 +4,7 @@ var winston = require('winston');
 var adviceEventEmiter = require('../adviceEventEmiter');
 var config = require('../config/prod.json');
 
-var currency = config.currency;
+var currency = 'BTC_'+config.currency;
 
 
 var track = function() {

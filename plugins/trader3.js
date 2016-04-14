@@ -1,5 +1,6 @@
 var plnx = require('plnx');
 var _ = require('lodash');
+var async = require('async');
 var winston = require('winston');
 var config = require('../config/prod.json');
 var adviceEventEmiter = require('../adviceEventEmiter');
