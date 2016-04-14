@@ -11,17 +11,26 @@ var walletService = require('../wallet');
 var previousAdvice;
 var fee = 0.0025;
 var diffTrigger = config.diffTrigger;
+var lastSell = {};
 
 var startTrading = function() {
+
+  adviceEventEmiter.on('poloniexSell', function(sell) {
+    lastSell = sell;
+  });
+
   adviceEventEmiter.on('advice', function(advice) {
     winston.info('New advice ' + JSON.stringify(advice));
-    var lastAvgPrice = advice.lastAvgPrice;
+    winston.info('Last sell ' + JSON.stringify(lastSell));
+
+    var lastSellRate = parseFloat(lastSell.rate);
+    advice.lastSellRate = lastSellRate;
 
     var transactionConfig = {
       key: config.key,
       secret: config.secret,
       currencyPair: currencyPair,
-      rate: lastAvgPrice
+      rate: lastSellRate
     };
 
     walletService.loadWallet(function(err, wallet) {
@@ -33,18 +42,16 @@ var startTrading = function() {
 
       winston.info('Current wallet : ' + JSON.stringify(wallet));
 
+      var toExecuteCalls = [];
+
       _.each(wallet.openOrders, function(order) {
-        winston.info('cancel order : ' + JSON.stringify(order));
-        plnx.cancelOrder({
-          key: config.key,
-          secret: config.secret,
-          orderNumber: order.orderNumber
-        }, function(err, result) {
-          if (err) {
-            winston.error(err);
-          } else {
-            winston.info(result);
-          }
+        toExecuteCalls.push(function(callback) {
+          winston.info('Cancel order : ' + JSON.stringify(order));
+          plnx.cancelOrder({
+            key: config.key,
+            secret: config.secret,
+            orderNumber: order.orderNumber
+          }, callback);
         });
       });
 
@@ -52,9 +59,9 @@ var startTrading = function() {
 
       if (previousAdvice) {
         if (advice.type === 'buy') {
-          diff = (previousAdvice.lastAvgPrice - lastAvgPrice) / lastAvgPrice;
+          diff = (previousAdvice.lastSellRate - lastSellRate) / lastSellRate;
         } else if (advice.type === 'sell') {
-          diff = (lastAvgPrice - previousAdvice.lastAvgPrice) / previousAdvice.lastAvgPrice;
+          diff = (lastSellRate - previousAdvice.lastSellRate) / previousAdvice.lastSellRate;
         }
         winston.info('diff between advice ' + (diff * 100) + '%');
       }
@@ -62,43 +69,43 @@ var startTrading = function() {
       previousAdvice = advice;
 
       if (advice.type === 'sell' && wallet.currencyValue > 0.0001) {
-        var totalBtc = (wallet.currencyValue * lastAvgPrice) * (1 - fee);
+        var totalBtc = (wallet.currencyValue * lastSellRate) * (1 - fee);
         winston.info('Total btc without fee ' + totalBtc);
         var profitBtc = (totalBtc - wallet.currencyBtcCost) / wallet.currencyBtcCost;
         winston.info('Profit ' + (profitBtc * 100) + '%');
 
         if (profitBtc > 0 || diff > diffTrigger) {
           transactionConfig.amount = wallet.currencyValue;
-          winston.info('Sell order : ' + JSON.stringify(transactionConfig));
-          plnx.sell(transactionConfig, function(err, data) {
-            if (err) {
-              winston.error(err);
-            } else {
-              winston.info(data);
-            }
+          toExecuteCalls.unshift(function(callback) {
+            winston.info('Sell order : ' + JSON.stringify(_.omit(transactionConfig, ['key', 'secret'])));
+            plnx.sell(transactionConfig, callback);
           });
         }
 
-
       } else if (advice.type === 'buy' && wallet.btc > 0.0001) {
-        var totalCurrency = (wallet.btc / lastAvgPrice) * (1 - fee);
+        var totalCurrency = (wallet.btc / lastSellRate) * (1 - fee);
         winston.info('Total ' + currency + ' without fee ' + totalCurrency);
         var profitCurrency = (totalCurrency - wallet.btcCurrencyCost) / wallet.btcCurrencyCost;
         winston.info('Profit ' + (profitCurrency * 100) + '%');
 
         if (profitCurrency > 0 || diff > diffTrigger) {
-          transactionConfig.amount = wallet.btc / lastAvgPrice;
-          winston.info('Buy order : ' + JSON.stringify(transactionConfig));
-          plnx.buy(transactionConfig, function(err, data) {
-            if (err) {
-              winston.error(err);
-            } else {
-              winston.info(data);
-            }
+          transactionConfig.amount = wallet.btc / lastSellRate;
+          toExecuteCalls.unshift(function(callback) {
+            winston.info('Buy order : ' + JSON.stringify(_.omit(transactionConfig, ['key', 'secret'])));
+            plnx.buy(transactionConfig, callback);
           });
         }
 
       }
+
+      async.series(toExecuteCalls, function(err, results) {
+        if (err) {
+          winston.error(err);
+        } else {
+          winston.info(results);
+        }
+      });
+
     });
 
   });

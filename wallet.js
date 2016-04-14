@@ -19,7 +19,7 @@ var loadWallet = function(walletCallback) {
       key: config.key,
       secret: config.secret,
       currencyPair: currencyPair,
-      start: moment().subtract(10, 'days').unix()
+      start: moment().subtract(7, 'days').unix()
     }, callback);
   }, function(callback) {
     plnx.returnAvailableAccountBalances({
