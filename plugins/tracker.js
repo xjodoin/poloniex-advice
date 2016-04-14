@@ -34,7 +34,7 @@ var track = function() {
   };
 
   connection.onclose = function() {
-    winston.info("Websocket connection closed");
+    winston.debug("Websocket connection closed");
   };
 
   connection.open();
