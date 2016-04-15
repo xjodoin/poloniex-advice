@@ -10,7 +10,7 @@ var currencyPair = 'BTC_' + currency;
 
 var walletService = require('../wallet');
 var previousAdvice;
-var fee = 0.0025;
+var fee = config.fee;
 var diffTrigger = config.diffTrigger;
 var lastSell = {};
 
