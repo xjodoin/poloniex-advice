@@ -11,7 +11,8 @@ var currencyPair = 'BTC_' + currency;
 var walletService = require('../wallet');
 var previousAdvice;
 var fee = config.fee;
-var diffTrigger = config.diffTrigger;
+var buyDiffTrigger = config.buyDiffTrigger;
+var sellDiffTrigger = config.sellDiffTrigger;
 var lastSell = {};
 
 var startTrading = function() {
@@ -75,7 +76,7 @@ var startTrading = function() {
         var profitBtc = (totalBtc - wallet.currencyBtcCost) / wallet.currencyBtcCost;
         winston.info('Profit ' + (profitBtc * 100) + '%');
 
-        if (profitBtc > 0 || diff > diffTrigger) {
+        if (profitBtc > 0 || diff > sellDiffTrigger) {
           transactionConfig.amount = wallet.currencyValue;
           toExecuteCalls.unshift(function(callback) {
             winston.info('Sell order : ' + JSON.stringify(_.omit(transactionConfig, ['key', 'secret'])));
@@ -89,7 +90,7 @@ var startTrading = function() {
         var profitCurrency = (totalCurrency - wallet.btcCurrencyCost) / wallet.btcCurrencyCost;
         winston.info('Profit ' + (profitCurrency * 100) + '%');
 
-        if (profitCurrency > 0 || diff > diffTrigger) {
+        if (profitCurrency > 0 || diff > buyDiffTrigger) {
           transactionConfig.amount = wallet.btc / lastSellRate;
           toExecuteCalls.unshift(function(callback) {
             winston.info('Buy order : ' + JSON.stringify(_.omit(transactionConfig, ['key', 'secret'])));
