@@ -6,20 +6,24 @@ var async = require('async');
 var config = require('./config/prod.json');
 
 var currency = config.currency;
-var currencyPair = 'BTC_'+currency;
+var currencyPair = 'BTC_' + currency;
 
 function round(value) {
   return Math.round(value * 10000000) / 10000000;
 }
 
-var loadWallet = function(walletCallback) {
+var loadWallet = function(walletCallback, daysHistory) {
+
+  if (!daysHistory) {
+    daysHistory = 7;
+  }
 
   async.series([function(callback) {
     plnx.returnTradeHistory({
       key: config.key,
       secret: config.secret,
       currencyPair: currencyPair,
-      start: moment().subtract(7, 'days').unix()
+      start: moment().subtract(daysHistory, 'days').unix()
     }, callback);
   }, function(callback) {
     plnx.returnAvailableAccountBalances({
@@ -86,7 +90,13 @@ var loadWallet = function(walletCallback) {
         openOrders: results[2]
       };
 
-      walletCallback(err, wallet);
+      if (wallet.currencyValue > 0 && wallet.currencyBtcCost === 0) {
+        winston.info('not enought history ' + daysHistory + ' days');
+        loadWallet(walletCallback, daysHistory * 2);
+      } else {
+        walletCallback(err, wallet);
+      }
+
     }
 
   });
