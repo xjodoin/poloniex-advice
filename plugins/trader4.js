@@ -93,11 +93,11 @@ var startTrading = function() {
                 winston.info('Profit ' + (profitCurrency * 100) + '%');
 
                 if (profitCurrency < 0) {
-                  var newRate = (wallet.btc / wallet.btcCurrencyCost) * (1 + fee);
+                  var newRate = (wallet.btc / wallet.btcCurrencyCost) * (1 - fee);
                   winston.info('Change rate to match minimum : ' + newRate);
                   transactionConfig.rate = newRate;
                 }
-                
+
                 transactionConfig.amount = wallet.btc / lastSellRate;
                 toExecuteCalls.unshift(function(callback) {
                     winston.info('Buy order : ' + JSON.stringify(_.omit(transactionConfig, ['key', 'secret'])));
