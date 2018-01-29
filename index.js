@@ -1,13 +1,13 @@
 var _ = require('lodash');
 
-var config = require('./config/prod.json');
+var config = require('config');
 var adviceEventEmiter = require('./adviceEventEmiter');
 
 var winston = require('winston');
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {'timestamp':true});
 
-var plugins = config.plugins;
+var plugins = config.get('plugins');
 
 _.each(plugins, function(plugin) {
   winston.info('Load plugin ' + plugin);
@@ -15,5 +15,5 @@ _.each(plugins, function(plugin) {
 });
 
 
-var method = require('./methods/firstOne');
+var method = require('./methods/btcInverse');
 method.start();
