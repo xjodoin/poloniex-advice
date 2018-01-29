@@ -1,15 +1,15 @@
 var _ = require('lodash');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
-var config = require('../config/prod.json');
+var config = require('config');
 var adviceEventEmiter = require('../adviceEventEmiter');
 
-var currency = 'BTC_' + config.currency;
+var currency = 'USDT_BTC';
 
-var interval = config.interval;
+var interval = config.get('interval');
 
 var client = new elasticsearch.Client({
-  host: config.elasticsearch,
+  host: config.get('elasticsearch'),
   log: 'info'
 });
 
@@ -25,7 +25,7 @@ var start = function() {
         "query": {
           "range": {
             "@timestamp": {
-              "gte": "now-30m",
+              "gte": "now-60m",
               "lte": "now"
             }
           }
@@ -46,14 +46,14 @@ var start = function() {
               "short_moving_avg": {
                 "moving_avg": {
                   "buckets_path": "avg_sell_price",
-                  "window": 5,
+                  "window": 10,
                   "model": "simple"
                 }
               },
               "long_moving_avg": {
                 "moving_avg": {
                   "buckets_path": "avg_sell_price",
-                  "window": 15,
+                  "window": 30,
                   "model": "simple"
                 }
               }

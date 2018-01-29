@@ -1,6 +1,5 @@
 var _ = require('lodash');
-var elasticsearch = require('elasticsearch');
-var moment = require('moment');
+
 var config = require('./config/prod.json');
 var adviceEventEmiter = require('./adviceEventEmiter');
 

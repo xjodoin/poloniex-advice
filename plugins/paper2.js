@@ -1,9 +1,9 @@
 var _ = require('lodash');
 var winston = require('winston');
 var adviceEventEmiter = require('../adviceEventEmiter');
-var config = require('../config/prod.json');
+var config = require('config');
 
-var currency = config.currency;
+var currency = config.get('currency');
 
 
 var paper = {
