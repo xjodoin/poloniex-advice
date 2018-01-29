@@ -3,9 +3,9 @@ var moment = require('moment');
 var winston = require('winston');
 var _ = require('lodash');
 var async = require('async');
-var config = require('./config/prod.json');
+var config = require('config');
 
-var currency = config.currency;
+var currency = config.get('currency');
 var currencyPair = 'BTC_' + currency;
 
 function round(value) {
