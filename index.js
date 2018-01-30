@@ -15,5 +15,5 @@ _.each(plugins, function(plugin) {
 });
 
 
-var method = require('./methods/btcInverse');
+var method = require('./methods/firstOne');
 method.start();

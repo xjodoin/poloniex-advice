@@ -4,7 +4,7 @@ var moment = require('moment');
 var config = require('config');
 var adviceEventEmiter = require('../adviceEventEmiter');
 
-var currency = 'USDT_BTC';
+var currency = config.get('currency');
 
 var interval = config.get('interval');
 

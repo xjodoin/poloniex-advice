@@ -2,7 +2,7 @@
   "elasticsearch": "http://elasticsearch:9200",
   "interval" : "15s",
   "safePosition" : true,
-  "currency": "ZEC",
+  "currency": "BTC_ZEC",
   "buyDiffTrigger" : 1,
   "sellDiffTrigger" : 1,
   "fee": 0.0015,
