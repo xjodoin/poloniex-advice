@@ -15,5 +15,5 @@ _.each(plugins, function(plugin) {
 });
 
 
-var method = require('./methods/firstOne');
+var method = require('./methods/classicWithOpenOrder');
 method.start();
