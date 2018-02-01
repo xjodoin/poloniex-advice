@@ -75,13 +75,13 @@ var startTrading = function() {
 
     //simulate trading
     if (advice.type === 'buy' && paper.btc > 0) {
-      var currencyTotal = buy(orderBook.asks, paper.btc);
+      var currencyTotal = buy(advice.orderBook.asks, paper.btc);
       var currencyFee = currencyTotal * 0.0025;
       winston.info('PAPER -- ' + currency +' total : '+ currencyTotal + ' transaction fee : ' + currencyFee);
       paper.currency = currencyTotal - currencyFee;
       paper.btc = 0;
     } else if (advice.type === 'sell' && paper.currency > 0) {
-      var btcTotal =  sell(orderBook.bids, paper.currency);
+      var btcTotal =  sell(advice.orderBook.bids, paper.currency);
       var btcFee = btcTotal * 0.0025;
       winston.info('PAPER -- BTC total : '+btcTotal+' transaction fee : ' + btcFee);
       paper.btc = btcTotal - btcFee;
